@@ -1,0 +1,67 @@
+STANCIU BIANCA-ANDREEA, GRUPA 315CC
+	In realizarea acestei teme am folosit notiuni de la curs sau de la laboratoarele de Mn, dar si notiuni dobandite in
+urma unui studiu amanuntit.
+	Cerinta 1: Sparce Jacobi
+-la functia generate_probabilities_system am incercat sa gasesc pentru fiecare element din diagrama labirintului cate o
+formula pe baza careia am contruit matricea A, pe care am initializat-o cu zero. De exemplu: daca elementul este in colt
+ sus, el are formula 1/4 * 0 + 1/4 * 0 + 1/4*p(i+1) + 1/4 *p(i+2), unde i reprezinta numarul(nodul, de ex 1), astfel in
+ matricea A am completat cu 4 elementul de pe diagonala principala, iar elementele de pe pozitiile (1,i+1),(1,i+2),
+ (i+1,1),(i+2,1) cu -1; daca elementul se afla in mijloc pe o linie care nu e nici prima, nici ultima el are formula
+ 1/6 * p(i-l) + 1/6*p(i-l+1) + 1/6 * p(i-1) + 1/6 * p(i+1)+1/6*p(i+l)+1/6*p(i+l+1), unde l reprezinta linia(nivelul),
+ atunci in matricea A elementul de pe diagonala principala va fi egal cu 6, iar cu -1 vor fi elementele de pe pozitiile
+  (i+1,i), (i+l,i),(i+l+1,i),(i,i+1),(i,i+l),(i,i+l+1), elementele de pe pozitiile i-l, i-l+1 si i-1 fiind compledate
+  la nodurile anterioare. Astfel, de fiecare data am testat pozitia nodului si in functie de asta am completat matricea
+  A conform formulei corespunzatoare, iar in vectorul b am completat cu 1 doar cand eram pe ultimul nivel, in rest
+  acesta va fi zero.
+
+-la functia matrix_to_csr am parcurs matricea A, iar la fiecare linie am reinitializat variabila cu care am innumarat
+elementele nenule de pe fiecare linie. Parcurgand fiecare element de pe linie
+am testat daca este diferit de zero si am completat vectorul valuez pe pozitia nz cu elementul din matrice A(i,j),
+vectorul colind retinand pozitia elementului de pe coloana , iar vectorul rowptr l-am construit adunand la valoarea
+de pe pozitia i numarul de elemente nenule de pe linia respectiva.
+
+-la Jacobi_factorization am descompus matricea A in N si P. Pentru a construi matricele N si P am constrit separat
+ matricea D care retine elementele de pe diagonala pricipala din matricea A, matricea U este formata din elementele de
+ deasupra diagonalei principale ale lui A luate cu semn schimbat si zero in rest si matricea L care este formata din
+ elementele de sub diagonala principala luate cu semn schimbta si zero in rest. Astfel, conform metodei Jacobi: N=D si
+ P=L+U cu ajutorul carora am calculat matricea de iteratie Jacobi si vectorul de iteratie Jacobi.
+
+-la Jacobi_sparse am folosit functia csr_multiplication, am caculat x la pasul 1, iar apoi cat timp norma din x si x-ul
+anterior va fi mai mare decat toleranta, am salvat vechiul x si am reapelat functia csr_multiplication. Cand conditia nu
+ a mai fost satisfacuta solutia finala va ramane ultimul x calculat.
+	Cerinta 2: K-Means
+-in functia clustering_pc, am facut un vector de apartenenta cu urmatoarea semnificatie: indicele reprezinta numarul
+punctului, pozitia lui pe linie in matricea points, iar valoarea reprezinta numarul clusterului din care face parte
+punctul. Numarul clusterului l-am determinat din restul impartirii pozitiei punctului pe linii la numarul NC dat. Pentru
+ realizarea matricei initiale de centroizi, am parcurs matricea de puncte si am verificat din ca cluster face parte,
+ urmand sa calculez media punctelor din fiecare cluster. Pentru a determina centroidul final, am luat o variabila
+ auxiliara last_centroid pentru a putea compara vechiul centroid cu noul. Cat timp acestia sunt diferiti, am
+ reinitializat cu zero alt vector de apartenenta "index". Parcurgand matricea de puncte points si initializand valoarea
+ minima cu infinit, am calculat pentru fiecare punct din points distanta euclediana fata de fiecare centroid si am
+ comparat fiecare din aceste distante cu valoarea minima, salvand in index indicele noului cluster. Astfel, pentru
+ a realiza noua matrice de centroizi am procedat la fel ca la matricea initiala: am parcurs din nou matricea de puncte
+ si am verificat din ce nou cluster apartin punctele, urmand sa calculez media punctelor din fiecare cluster.
+-in functia compute_cost_pc am folosit secventa de cod de la clustering_pc unde am calculat distanta euclediana fata de
+fiecare centroid pentru a putea folosi vectorul de apartenenta in care am retinut numarul de clustere. Verificand
+apartenenta unui punct de un anumit cluster, am calculat distanta dintre punct si centroid, distanta care se adauga la
+costul final.
+	Cerinta 3: Householder prediction
+-in functia rgbHistrogram, am citit prima data imaginea bazandu-ma pe path_to_image, returnandu-mi o matrice in 3
+dimensiuni: inaltime*latime*3, iar fiecare pixel avand 3 componente: R,G,B.Am creat cele 3 canale: canalul rosu,
+canalul verde si canalul albastru. Deoarece r,g,b apartin intervalului [0,255), am construit un vector de intervale.
+Am luat fiecare canal separat si folosind functia histc pentru fiecare matrice, foosindu-ma si de vectorul de intervale,
+ voi obtine pentru fiecare canal cate o solutie care va contine cate elemente din matrice sunt intre fiecare dintre
+ intervalele date. Calculand astfel la fiecare cate o solutie, atunci solutia finala va fi reprezentata de alipirea
+ acestor rezultate.
+-pentru implementarea functiei hsvHistogram, am realizat separat functia RGBhsv, care imi converteste din RGB in HSV.
+M-am folosit pentru implementarea acestei functii de algoritmul 2 din enuntul temei. Am citit imaginea bazandu-ma pe
+path_to_image, returnandu-mi o matrice in 3 dimensiuni. Am creat 3 canale :rosu,verde si albastru. Deoarece componentele
+ H,S,V apartin intervalului [0,1] am convertit r,g,b la double pentru a putea realiza impartirea la 255. Am aflat
+ minimul si maximul din matricele R,G,B, am calculat delta ca fiind diferenta dintre maxim si minim,am initializat H
+ si S cu zero, iar V va lua matricea maxima, indiferent. Pentru a afla H am folosit mai multe variabile auxiliare, in
+ functie de cazul in care ma aflam. Astfel, am abordat 3 cazur: C_max=R, c_max=G si C_max = B si am folosit functia
+ "find" pentru a vectoriza. La aflarea fiecarei variabile auxiliare, am aplicat formula corespunzatoare fiecarui caz.
+ La final am luat si cazul in care delta este zero. Asadar, H final va fi H-ul obtinut impartit la 360. Pentru a calcula
+ S-ul am folosit find pentru C_max diferit de zero si am aplicat formula din algoritm.Astfel, in functia hsvHistogram,
+ am apelat functia RGBhsv pentru a afla cele 3 matrice si am procedat la fel ca la rgbHistogram, luand un vector de
+ intervale si folosind histc pentru a afla solutiile pe care le-am alipit la final.
